@@ -2,10 +2,16 @@ const { nanoid } = require('nanoid');
 const books = require('./book');
 
 const getBooksHandler= (req, res) => {
+    const param = req.query;
+    let result = books;
+
+    result = param.name ? result.filter((book) => book.name === param.name) : result;
+    result = result.map(({ id, name, publisher }) => ({ id, name, publisher }));
+    
     const response = res.response({
         status : "success",
         data : {
-            books: books.map(({ id, name, publisher }) => ({ id, name, publisher }))
+            books:result
         }
     });
     response.code(200);
