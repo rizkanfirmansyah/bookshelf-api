@@ -8,13 +8,15 @@ const getBooksHandler= (req, res) => {
     param.finished = param.finished > 0 ? true:false;
 
     // Filter By Name
-    result = param.name ? result.filter((book) => book.name === param.name) : result;
+    result = param.name ? result.filter((book) => book.name.toLowerCase().includes(param.name.toLowerCase())) : result;
     // Filter By Reading is True
     result = param.reading ? result.filter((book) => book.reading === param.reading) : result;
     // Filter By Finished is True
     result = param.finished ? result.filter((book) => book.finished === param.finished) : result;
     // Format JSON for id, name, publisher
     result = result.map(({ id, name, publisher }) => ({ id, name, publisher }));
+
+    console.log(result);
     
     const response = res.response({
         status : "success",
@@ -170,5 +172,28 @@ const editBookByIdHandler = (request, h) => {
   return response;
 };
 
+const deleteBookByIdHandler = (request, h) => {
+  const { bookId } = request.params;
+ 
+  const index = books.findIndex((book) => book.id === bookId);
+ 
+  if (index !== -1) {
+    books.splice(index, 1);
+    const response = h.response({
+      status: 'success',
+      message: 'Buku berhasil dihapus',
+    });
+    response.code(200);
+    return response;
+  }
+ 
+  const response = h.response({
+    status: 'fail',
+    message: 'Buku gagal dihapus. Id tidak ditemukan',
+  });
+  response.code(404);
+  return response;
+};
 
-module.exports = {getBooksHandler, addBookHandler, getBookByIdHandler, editBookByIdHandler};
+
+module.exports = {getBooksHandler, addBookHandler, getBookByIdHandler, editBookByIdHandler, deleteBookByIdHandler};
